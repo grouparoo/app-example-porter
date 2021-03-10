@@ -1,6 +1,6 @@
-# app-example-gcp
+# Grouparoo `app-example-gcp`
 
-Example Grouparoo project for deploying Grouparoo on `GCP` with `Google Cloud Run` and `Cloud Build`.
+_An example Grouparoo project for deploying Grouparoo on Google Cloud Platform (`GCP`) with `Google Cloud Run` and `Cloud Build`._
 
 Goal: To create a scalable and flexible Grouparoo deployment that:
 
