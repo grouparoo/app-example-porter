@@ -60,3 +60,7 @@ grouparoo init .
 - You may want to modify logging behavior with:
   - `GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP=true`- GCE adds timestamps to all log messages
   - `GROUPAROO_LOGS_STDOUT_DISABLE_COLOR=true`- GCE will not render log messages in color
+
+---
+
+Vist https://github.com/grouparoo/app-examples to see other Grouparoo Example Projects.
