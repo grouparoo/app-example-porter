@@ -60,6 +60,7 @@ grouparoo init .
 - You may want to modify logging behavior with:
   - `GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP=true`- GCE adds timestamps to all log messages
   - `GROUPAROO_LOGS_STDOUT_DISABLE_COLOR=true`- GCE will not render log messages in color
+- If you are deleting your Google Cloud Run service, be sure to all delete your [Cloud Build](https://console.cloud.google.com/cloud-build/) trigger, or else the app will be re-created again on the next build.
 
 ---
 
