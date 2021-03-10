@@ -1,6 +1,6 @@
-# app-example-gce
+# app-example-gcp
 
-Example Grouparoo project for deploying Grouparoo on `GCE` with `Google Cloud Run` and `Cloud Build`.
+Example Grouparoo project for deploying Grouparoo on `GCP` with `Google Cloud Run` and `Cloud Build`.
 
 Goal: To create a scalable and flexible Grouparoo deployment that:
 
@@ -22,7 +22,7 @@ grouparoo init .
 
 ## Deployment Steps
 
-1. Configure a new GCE project for Grouparoo, or choose an existing one
+1. Configure a new GCP project for Grouparoo, or choose an existing one
 2. Create the Grouparoo Database
 
    - Choose `Postgres CLoud SQL`
@@ -58,8 +58,8 @@ grouparoo init .
 ## Notes
 
 - You may want to modify logging behavior with:
-  - `GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP=true`- GCE adds timestamps to all log messages
-  - `GROUPAROO_LOGS_STDOUT_DISABLE_COLOR=true`- GCE will not render log messages in color
+  - `GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP=true`- Cloud Run adds timestamps to all log messages
+  - `GROUPAROO_LOGS_STDOUT_DISABLE_COLOR=true`- Cloud Run will not render log messages in color
 - If you are deleting your Google Cloud Run service, be sure to all delete your [Cloud Build](https://console.cloud.google.com/cloud-build/) trigger, or else the app will be re-created again on the next build.
 
 ---
