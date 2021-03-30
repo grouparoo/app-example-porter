@@ -23,7 +23,8 @@
   },
   "scripts": {
     "start": "cd node_modules/@grouparoo/core && ./bin/start",
-    "test": "./__tests__/integration"
+    "test": "./__tests__/integration",
+    "create-env": "printenv > .env"
   },
   "grouparoo": {
     "plugins": [
