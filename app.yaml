@@ -3,3 +3,5 @@ instance_class: B2
 env: standard
 manual_scaling:
   instances: 2
+vpc_access_connector:
+  name: projects/app-example-gcp/locations/us-west-4/connectors/app-example-gcp-connector
