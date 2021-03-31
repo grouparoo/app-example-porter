@@ -23,7 +23,12 @@ grouparoo init .
 ## Deployment Steps
 
 1. Configure a new GCP project for Grouparoo, or choose an existing one
-2. Create the Grouparoo Database
+
+2. Create a VPC connector to link up Google App Engine to the other services. [Learn more here](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access#creating_a_connector).
+
+   - Create one in the VPC network panel and then attach it to you Google App Engine Service - When choosing a CIDR, choose a wide range, like `10.8.1.0/24`, if `10.8.0.0/24` is the default network range.
+
+3. Create the Grouparoo Database
 
    - Choose `Postgres CLoud SQL`
    - A `standard` server should be OK, we recommend `4 vCPU, 15 GB`
@@ -31,30 +36,34 @@ grouparoo init .
    - Once the database is running, create a new database like `grouparoo_production`
    - Note and build `DATABASE_URL` in a scratch document
 
-3. Create the Grouparoo Redis Server
+4. Create the Grouparoo Redis Server
 
    - Choose `Memorystore - Redis`
    - Create 1 replica
    - `1GB` or capacity should be enough
    - "Enable Auth" but disable "in transit encryption" for redis
-   - Once redis is up and running, note the AUTH string. You'll use this as the "password" in `REDIS_URL`. The username can be anything, like `"redis"`
+   - Once redis is up and running, note the AUTH string. You'll use this as the "password" in `REDIS_URL`. The username should be a 1-char letter which signals it should be ignored, like `"r"`
    - Note and build `REDIS_URL` in a scratch document
 
-4. Enable Google App Engine
+5. Enable Google App Engine
 
    - Enable the Google App Engine API for this Service [here](https://console.cloud.google.com/appengine/start). You do not need to deploy anything yet
 
-5. Enable Google Cloud Build
+6. Enable Google Cloud Build
 
    - Enable The Google Cloud Build API [here](https://console.cloud.google.com/cloud-build).
    - The Cloud Build service will also need permissions to deploy App Engine. [Do that here](https://console.cloud.google.com/cloud-build/settings) by enabling `App Engine Admin` and `Service Account User`.
+   - The Cloud Build service will also need access the `Serverless VPC Access User` and `Compute Network Admin` roles. To add them, you need to go to the IAM panel, and add that role to the service user. The service user's "email" looks like `{account-id}@cloudbuild.gserviceaccount.com`
    - Create a new Trigger from your git repo
    - Configure Environment Variables. Note how in `cloudbuild.yaml` we are using Substitution Variables. We are going to store the values we want for the Grouparoo Environment variables within Google Cloud Build so they are baked into the image we deploy, in a custom `.env` file for production. In Google Cloud Build, store the values for your Environment Variables, e.g.: `DATABASE_URL` should be stored as `_DATABASE_URL` (note the leading `_`). The full list is in `cloudbuild.yaml`.
+     - Be sure that your `WEB_URL` matches your deployment URL, something like `https://app-example-gcp.wn.r.appspot.com` until you set a custom domain.
+   - Attach the VPC connector you made in step 2. This is done by editing your `app.yml`'s `vpc_access_connector` setting. Learn more [here](https://cloud.google.com/appengine/docs/standard/nodejs/connecting-vpc).
 
-6. Deploy your app by running the CLoud Build Trigger manually
+7. Deploy your app by running the CLoud Build Trigger manually
 
-7. Configure Monitoring
-8. Configure Load Balancer, SSL, and DNS
+8. Configure Monitoring
+
+9. Configure Load Balancer, SSL, and DNS
 
 ## Notes
 
