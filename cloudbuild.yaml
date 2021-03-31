@@ -1,0 +1,20 @@
+steps:
+  - name: node:14
+    entrypoint: npm
+    args: ["install"]
+  - name: node:14
+    entrypoint: npm
+    args: ["run", "create-env"]
+    env:
+      - "WEB_URL=${_WEB_URL}"
+      - "WEB_SERVER=${_WEB_SERVER}"
+      - "WORKERS=${_WORKERS}"
+      - "REDIS_URL=${_REDIS_URL}"
+      - "DATABASE_URL=${_DATABASE_URL}"
+      - "SERVER_TOKEN=${_SERVER_TOKEN}"
+      - "GROUPAROO_LOG_LEVEL=${_GROUPAROO_LOG_LEVEL}"
+      - "GROUPAROO_LOGS_STDOUT_DISABLE_COLOR=${_GROUPAROO_LOGS_STDOUT_DISABLE_COLOR}"
+      - "GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP=${_GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP}"
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: ["app", "deploy"]
+timeout: "1600s"
