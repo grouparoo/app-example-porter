@@ -4,4 +4,4 @@ env: standard
 manual_scaling:
   instances: 2
 vpc_access_connector:
-  name: projects/app-example-gcp/locations/us-west-4/connectors/app-example-gcp-connector
+  name: projects/app-example-gcp/locations/us-west4/connectors/app-example-gcp-connector
