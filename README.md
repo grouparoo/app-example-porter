@@ -96,7 +96,7 @@ Notes on configuring your `.env` on the server:
 
 - Keep the `PORT=3000`. We've configured `iptables` to forward all traffic on port 80 to 3000 internally. This means our unprivileged app user can doesn't need to run the app as `sudo`.
   - The `WEB_URL` will be something like `WEB_URL=http://1.2.3.4`
-- For this example, we'll be making a single process which acts as both web ann background workers (`WORKERS=10` and `WEB_SERVER=true`)
+- For this example, we'll be making a single process which acts as both web and background workers (`WORKERS=10` and `WEB_SERVER=true`)
 - Use the values from the new Google Cloud services for `DATABASE_URL` and `REDIS_URL`
 
 Now, we'll use `pm2` to monitor and run the Grouparoo application:
