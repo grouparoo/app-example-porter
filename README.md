@@ -79,21 +79,20 @@ cp .env.example .env
 vim .env # Fill in your server information; enable both WEB and WORKERS
 
 # Configure an internal forward from port 3000 (the app) to port 80
-# note - your enthernet interface may not be `ens4`, it may be something else.  Run `ifconfig -a` to see your network interfaces
+# Note: your ethernet interface may not be `ens4`, it may be something else.  Run `ifconfig -a` to see your network interfaces
 sudo iptables -A INPUT -i ens4 -p tcp --dport 80 -j ACCEPT
 sudo iptables -A INPUT -i ens4 -p tcp --dport 3000 -j ACCEPT
 sudo iptables -A PREROUTING -t nat -i ens4 -p tcp --dport 80 -j REDIRECT --to-port 3000
 
 # install iptables-persistent to save your rules
-sudo apt-get install iptables-persistent -y
-# answer 'yes' to save your existing iptables rules
+sudo apt-get install iptables-persistent -y # answer 'yes' to save your existing iptables rules
 ```
 
 Notes on configuring your `.env` on the server:
 
 - Keep the `PORT=3000`. We've configured `iptables` to forward all traffic on port 80 to 3000 internally. This means our unprivileged app user can doesn't need to run the app as `sudo`.
   - The `WEB_URL` will be something like `WEB_URL=http://1.2.3.4`
-- For this example, we'll be making 2 processes which act as both web ann background workers (`WORKERS=10` and `WEB_SERVER=true`)
+- For this example, we'll be making a single process which acts as both web ann background workers (`WORKERS=10` and `WEB_SERVER=true`)
 - Use the values from the new Google Cloud services for `DATABASE_URL` and `REDIS_URL`
 
 Now, we'll use `pm2` to monitor and run the Grouparoo application:
@@ -106,7 +105,7 @@ npm install -g pm2
 
 # Install PM2 into your OS's init system
 pm2 startup # learn more @ https://pm2.keymetrics.io/docs/usage/startup/
-# Follow the prompts
+# Follow the prompts to register pm2 with systemd
 
 # start the grouparoo process
 pm2 start --name grouparoo --interpreter=bash node_modules/@grouparoo/core/bin/start
@@ -115,6 +114,10 @@ pm2 start --name grouparoo --interpreter=bash node_modules/@grouparoo/core/bin/s
 pm2 list # see running processes
 pm2 logs # follow process logs (ie --tail)
 pm2 monit # fancy process monitor
+
+# prepare logging directory for access
+sudo mkdir /var/log/grouparoo
+sudo chown -R $USER /var/log/grouparoo
 ```
 
 6. Configure Monitoring
