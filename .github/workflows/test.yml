@@ -43,6 +43,8 @@ jobs:
       # we want to test a 'fresh' install for new users
       - run: rm -rf node_modules && rm package-lock.json
       - run: npm install
+      - run: sudo mkdir -p /var/log/grouparoo
+      - run: sudo chown -R $USER /var/log/grouparoo
       - run: npm test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres
