@@ -1,10 +1,11 @@
 # Grouparoo `app-example-gcp`
 
-\_An example Grouparoo project for deploying Grouparoo on Google Cloud Platform (`GCP`) with Node.JS
+_**An example Grouparoo project for deploying Grouparoo on Google Cloud Platform (`GCP`) with Node.JS**_
 
 Goal: To create Grouparoo deployment that:
 
 - Relies on Google's hosted databases for persistence.
+- Is process-managed locally
 
 Limitations:
 
@@ -85,7 +86,7 @@ sudo iptables -A PREROUTING -t nat -i ens4 -p tcp --dport 80 -j REDIRECT --to-po
 
 # install iptables-persistent to save your rules
 sudo apt-get install iptables-persistent -y
-# answer 'yes' to save your existing rules
+# answer 'yes' to save your existing iptables rules
 ```
 
 Notes on configuring your `.env` on the server:
@@ -122,10 +123,14 @@ pm2 monit # fancy process monitor
 
 ## Updating the Deployment
 
-1. SSH to your server
-2. `git pull` in the application directory
-3. `npm install` in the application directory
-4. `pm2 restart grouparoo` to restart the application
+SSH to your server
+
+```bash
+# in the application directory
+git pull
+npm install
+pm2 restart grouparoo
+```
 
 ## Notes
 
@@ -135,14 +140,7 @@ You may want to modify logging behavior with:
 
 - `GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP=true`- Cloud Run adds timestamps to all log messages
 - `GROUPAROO_LOGS_STDOUT_DISABLE_COLOR=true`- Cloud Run will not render log messages in color
-
-If you are deleting your App Engine service, be sure to all delete your [Cloud Build](https://console.cloud.google.com/cloud-build/) trigger, or else the app will be re-created again on the next build.
-
-If you add new Environment Variables, you need to add them to both the Cloud Build Trigger's Substitution Variables and `cloudbuild.yml`. Unlike other PaaS platforms, if you change a value in Substitution Variables, you need to rebuild your application, and then re-deploy it.
-
-## Attribution
-
-- The method to securely source and store environment variables was inspired by [this article](https://medium.com/@brian.young.pro/how-to-add-environmental-variables-to-google-app-engine-node-js-using-cloud-build-5ce31ee63d7).
+- `GROUPAROO_LOGS_PATH="/var/log/grouparoo"`- Logs are stored in `/var/log/grouparoo` with this setting enabled.
 
 ---
 
