@@ -86,6 +86,10 @@ sudo iptables -A PREROUTING -t nat -i ens4 -p tcp --dport 80 -j REDIRECT --to-po
 
 # install iptables-persistent to save your rules
 sudo apt-get install iptables-persistent -y # answer 'yes' to save your existing iptables rules
+
+# prepare logging directory for access
+sudo mkdir /var/log/grouparoo
+sudo chown -R $USER /var/log/grouparoo
 ```
 
 Notes on configuring your `.env` on the server:
@@ -114,10 +118,6 @@ pm2 start --name grouparoo --interpreter=bash node_modules/@grouparoo/core/bin/s
 pm2 list # see running processes
 pm2 logs # follow process logs (ie --tail)
 pm2 monit # fancy process monitor
-
-# prepare logging directory for access
-sudo mkdir /var/log/grouparoo
-sudo chown -R $USER /var/log/grouparoo
 ```
 
 6. Configure Monitoring
