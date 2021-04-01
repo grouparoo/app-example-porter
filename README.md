@@ -1,13 +1,15 @@
 # Grouparoo `app-example-gcp`
 
-_An example Grouparoo project for deploying Grouparoo on Google Cloud Platform (`GCP`) with `Google App Engine` and `Cloud Build`._
+\_An example Grouparoo project for deploying Grouparoo on Google Cloud Platform (`GCP`) with Node.JS
 
-Goal: To create a scalable and flexible Grouparoo deployment that:
+Goal: To create Grouparoo deployment that:
 
-- Has no servers to directly manage
-- Can be auto-scaled as needed
-- Will be automatically deployed when the code changes
-- Is a [12-factor app](https://12factor.net/) with all configuration stored in the Environment
+- Relies on Google's hosted databases for persistence.
+
+Limitations:
+
+- This quick configuration does not have application high-availability, as it relies on a single host. This is not a [12-factor app](https://12factor.net/) with configuration stored in the Environment
+- Will not re-deploy as your code changes. You can do that manually, or use a tool like Chef or Ansible.
 
 ## Repository Configuration
 
@@ -24,52 +26,110 @@ grouparoo init .
 
 1. Configure a new GCP project for Grouparoo, or choose an existing one
 
-2. Create a VPC connector to link up Google App Engine to the other services. [Learn more here](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access#creating_a_connector).
-
-   - Create one in the VPC network panel and then attach it to you Google App Engine Service - When choosing a CIDR, choose a wide range, like `10.8.1.0/24`, if `10.8.0.0/24` is the default network range.
-
-3. Create the Grouparoo Database
+2. Create the Grouparoo Database
 
    - Choose `Postgres CLoud SQL`
    - A `standard` server should be OK, we recommend `4 vCPU, 15 GB`
-   - Enable the Private IP address
+   - Enable the Private IP address & an Automatically Assigned IP Range.
    - Once the database is running, create a new database like `grouparoo_production`
-   - Note and build `DATABASE_URL` in a scratch document
+   - Note and build `DATABASE_URL` in a scratch document. The default username is `postgres`.
 
-4. Create the Grouparoo Redis Server
+3. Create the Grouparoo Redis Server
 
    - Choose `Memorystore - Redis`
    - Create 1 replica
    - `1GB` or capacity should be enough
    - "Enable Auth" but disable "in transit encryption" for redis
+   - Use the Private IP address & an Automatically Assigned IP Range settings you created for Postgres above.
    - Once redis is up and running, note the AUTH string. You'll use this as the "password" in `REDIS_URL`. The username should be a 1-char letter which signals it should be ignored, like `"r"`
    - Note and build `REDIS_URL` in a scratch document
 
-5. Enable Google App Engine
+4. Create a Compute Engine Server to run your Grouparoo Instances
 
-   - Enable the Google App Engine API for this Service [here](https://console.cloud.google.com/appengine/start). You do not need to deploy anything yet
+   - Choose a machine with at least 2CPUs and 4GB of memory
+   - Choose the Ubuntu 20.04 LTS Minimal Boot Disk
+   - Enable the HTTP and HTTPS ports in the firewall
+   - ssh into the instance from the console, and:
 
-6. Enable Google Cloud Build
+```bash
+# Update packages
+sudo apt-get update && sudo apt-get upgrade -y
 
-   - Enable The Google Cloud Build API [here](https://console.cloud.google.com/cloud-build).
-   - The Cloud Build service will also need permissions to deploy App Engine. [Do that here](https://console.cloud.google.com/cloud-build/settings) by enabling `App Engine Admin` and `Service Account User`.
-   - The Cloud Build service will also need access the `Serverless VPC Access User` and `Compute Network Admin` roles. To add them, you need to go to the IAM panel, and add that role to the service user. The service user's "email" looks like `{account-id}@cloudbuild.gserviceaccount.com`
-   - Create a new Trigger from your git repo
-   - Configure Environment Variables. Note how in `cloudbuild.yaml` we are using Substitution Variables. We are going to store the values we want for the Grouparoo Environment variables within Google Cloud Build so they are baked into the image we deploy, in a custom `.env` file for production. In Google Cloud Build, store the values for your Environment Variables, e.g.: `DATABASE_URL` should be stored as `_DATABASE_URL` (note the leading `_`). The full list is in `cloudbuild.yaml`.
-     - Be sure that your `WEB_URL` matches your deployment URL, something like `https://app-example-gcp.wn.r.appspot.com` until you set a custom domain.
-   - Attach the VPC connector you made in step 2. This is done by editing your `app.yml`'s `vpc_access_connector` setting. Learn more [here](https://cloud.google.com/appengine/docs/standard/nodejs/connecting-vpc).
+# Install Tools
+sudo apt-get install iptables net-tools vim git -y
 
-7. Deploy your app by running the CLoud Build Trigger manually
+# Install NVM and Node.JS
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+source ~/.bashrc
+nvm install v14
 
-8. Configure Monitoring
+# Git clone/copy your code to the server
+# For example...
+git clone https://github.com/grouparoo/app-example-gcp
+cd app-example-gcp
 
-9. Configure Load Balancer, SSL, and DNS
+# << be sure that you are in your application directory >>
+
+# Install packages
+npm install
+
+# In your project, copy and configure the .env file to match your environment
+cp .env.example .env
+vim .env # Fill in your server information; enable both WEB and WORKERS
+
+# Configure an internal forward from port 3000 (the app) to port 80
+# note - your enthernet interface may not be `ens4`, it may be something else.  Run `ifconfig -a` to see your network interfaces
+sudo iptables -A INPUT -i ens4 -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -i ens4 -p tcp --dport 3000 -j ACCEPT
+sudo iptables -A PREROUTING -t nat -i ens4 -p tcp --dport 80 -j REDIRECT --to-port 3000
+
+# install iptables-persistent to save your rules
+sudo apt-get install iptables-persistent -y
+# answer 'yes' to save your existing rules
+```
+
+Notes on configuring your `.env` on the server:
+
+- Keep the `PORT=3000`. We've configured `iptables` to forward all traffic on port 80 to 3000 internally. This means our unprivileged app user can doesn't need to run the app as `sudo`.
+  - The `WEB_URL` will be something like `WEB_URL=http://1.2.3.4`
+- For this example, we'll be making 2 processes which act as both web ann background workers (`WORKERS=10` and `WEB_SERVER=true`)
+- Use the values from the new Google Cloud services for `DATABASE_URL` and `REDIS_URL`
+
+Now, we'll use `pm2` to monitor and run the Grouparoo application:
+
+```bash
+# << be sure that you are in your application directory >>
+
+# Install PM2
+npm install -g pm2
+
+# Install PM2 into your OS's init system
+pm2 startup # learn more @ https://pm2.keymetrics.io/docs/usage/startup/
+# Follow the prompts
+
+# start the grouparoo process
+pm2 start --name grouparoo --interpreter=bash node_modules/@grouparoo/core/bin/start
+
+# see process information
+pm2 list # see running processes
+pm2 logs # follow process logs (ie --tail)
+pm2 monit # fancy process monitor
+```
+
+6. Configure Monitoring
+
+7. Configure Load Balancer, SSL, and DNS
+
+## Updating the Deployment
+
+1. SSH to your server
+2. `git pull` in the application directory
+3. `npm install` in the application directory
+4. `pm2 restart grouparoo` to restart the application
 
 ## Notes
 
-In this example, we are going to deploy a single server type that acts as both a WEB and BACKGROUND WORKER service for simplicity. To split your services, you'll need to explore the [`service` directive in `app.yaml`](https://cloud.google.com/appengine/docs/standard/nodejs/config/appref). We are keeping alive 2 instances with manual scaling.
-
-Along the way, you may encounter an API that is not yet enabled for for your GCP Project. You'll need to enable many. If you are having trouble, read the logs from Cloud Build to see if there's a link to enable an API (e.g: "App Engine Admin API").
+In this example, we deployed a single server type that acts as both a WEB and BACKGROUND WORKER service for simplicity. For more robust deployments, you may want to split these tasks to different servers.
 
 You may want to modify logging behavior with:
 
