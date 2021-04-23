@@ -24,7 +24,7 @@ jobs:
       id: configure_porter
       run: |2
 
-        sudo porter auth login --token ${{secrets.PORTER_TOKEN_746}}
+        sudo porter auth login --token ${{secrets.PORTER_TOKEN_762}}
         sudo porter docker configure
     - name: Docker build, push
       id: docker_build_push
