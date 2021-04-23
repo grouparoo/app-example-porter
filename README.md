@@ -12,6 +12,8 @@ Goal: To create Grouparoo deployment that:
 
 In this example, we deployed a single server type that acts as both a WEB and BACKGROUND WORKER service for simplicity. For more robust deployments, you may want to split these tasks to different servers.
 
+Even though it's not needed by the buildpack, we use a `Procfile` to run the application directly, bypassing `npm start`. In this way signals are property passed to the app.
+
 You may want to modify logging behavior with:
 
 - `GROUPAROO_LOGS_STDOUT_DISABLE_TIMESTAMP=true`- Don't prepend timestamps to log messages
