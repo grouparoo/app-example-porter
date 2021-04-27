@@ -1,6 +1,6 @@
 {
   "author": "Grouparoo Inc <hello@grouparoo.com>",
-  "name": "@grouparoo/app-example-gce",
+  "name": "@grouparoo/app-example-porter",
   "description": "An example Grouparoo Deployment",
   "version": "0.0.1",
   "license": "MPL-2.0",
@@ -23,8 +23,7 @@
   },
   "scripts": {
     "start": "cd node_modules/@grouparoo/core && ./bin/start",
-    "test": "./__tests__/integration",
-    "create-env": "printenv > .env"
+    "test": "./__tests__/integration"
   },
   "grouparoo": {
     "plugins": [
