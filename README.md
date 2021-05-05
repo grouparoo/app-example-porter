@@ -26,6 +26,4 @@ You may want to modify logging behavior with:
 
 Visit https://github.com/grouparoo/app-examples to see other Grouparoo Example Projects.
 
-```
 
-```
