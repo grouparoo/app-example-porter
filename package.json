@@ -16,7 +16,7 @@
     "@grouparoo/google-sheets": "0.3.0",
     "@grouparoo/hubspot": "0.3.0",
     "@grouparoo/logger": "0.3.0",
-    "@grouparoo/mailchimp": "0.3.0",
+    "@grouparoo/mailchimp": "0.3.1",
     "@grouparoo/mysql": "0.3.0",
     "@grouparoo/postgres": "0.3.0",
     "@grouparoo/salesforce": "0.3.0",
