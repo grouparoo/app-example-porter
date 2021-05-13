@@ -12,7 +12,7 @@
     "@grouparoo/bigquery": "0.3.0",
     "@grouparoo/core": "0.3.0",
     "@grouparoo/csv": "0.3.0",
-    "@grouparoo/files-s3": "0.3.0",
+    "@grouparoo/files-s3": "0.3.1",
     "@grouparoo/google-sheets": "0.3.0",
     "@grouparoo/hubspot": "0.3.0",
     "@grouparoo/logger": "0.3.0",
