@@ -19,7 +19,7 @@
     "@grouparoo/mailchimp": "0.3.0",
     "@grouparoo/mysql": "0.3.0",
     "@grouparoo/postgres": "0.3.0",
-    "@grouparoo/salesforce": "0.3.0",
+    "@grouparoo/salesforce": "0.3.1",
     "@grouparoo/snowflake": "0.3.0",
     "@grouparoo/ui-community": "0.3.0",
     "@grouparoo/zendesk": "0.3.0"
