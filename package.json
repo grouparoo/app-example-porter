@@ -13,7 +13,7 @@
     "@grouparoo/core": "0.3.0",
     "@grouparoo/csv": "0.3.0",
     "@grouparoo/files-s3": "0.3.0",
-    "@grouparoo/google-sheets": "0.3.0",
+    "@grouparoo/google-sheets": "0.3.1",
     "@grouparoo/hubspot": "0.3.0",
     "@grouparoo/logger": "0.3.0",
     "@grouparoo/mailchimp": "0.3.0",
