@@ -8,6 +8,35 @@ Goal: To create Grouparoo deployment that:
 - Is automatically deployed when the git project changes
 - Is configured entirely via Environment Variables (is a 12-factor app)
 
+## How We Got Here
+
+> Some of the setup steps have already been done for you to create this app. Here's what we've taken care of:
+
+1. Create a new Grouparoo project. Learn more @ https://www.grouparoo.com/docs/installation.
+
+```
+npm install -g grouparoo
+grouparoo init .
+```
+
+2. Install the Grouparoo plugins you want, e.g.: `grouparoo install @grouparoo/postgres`. Learn more @ https://www.grouparoo.com/docs/installation/plugins
+
+3. Create the `Procfile` that Porter/Kubernetes/Docker will use to launch your app.
+
+```
+web: cd node_modules/@grouparoo/core && ./bin/start
+```
+
+## Running this Repo
+
+Assuming you have node.js installed (v12+):
+
+1. `git clone https://github.com/grouparoo/app-example-heroku.git`
+2. `cd app-example-heroku`
+3. `npm install`
+4. `cp .env.example .env`
+5. `npm start`
+
 ## Notes
 
 Since we are using Buildpacks, set the `engines` field in `package.json` to lock in a specififc node.js version.
