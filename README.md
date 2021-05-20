@@ -37,6 +37,13 @@ Assuming you have node.js installed (v12+):
 4. `cp .env.example .env`
 5. `npm start`
 
+## Deploying this Repo
+
+Deploy with Porter!  You will need to launch 2 addtional conatiners which can be found in the "community add-ons" section of the Porter Dashboard:
+* A redis container
+* A postgres container
+
+
 ## Notes
 
 Since we are using Buildpacks, set the `engines` field in `package.json` to lock in a specififc node.js version.
